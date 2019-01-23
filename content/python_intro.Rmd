@@ -190,7 +190,11 @@ print(x[0][1])
 a, b = 0, 1
 print(a)
 print(b)
+```
 
+* mais on ne peut pas faire 
+
+```{pyhton}
 # erreur :
 # a, b = 0
 ```
@@ -206,6 +210,90 @@ while b < 10:
    print(b)
    a, b = b, a+b
 ```
+
+### if 
+
+* `elif` pour "else if"
+
+```{python}
+x = 42
+if x < 0:
+  x = 0
+  print 'Negative changed to zero'
+elif x == 0:
+  print 'Zero'
+elif x == 1:
+  print 'Single'
+else:
+  print 'More'
+```
+
+### for 
+
+* Ressemble au `for` de R, on peut itérer aussi bien sur une suite d'entiers que sur une liste ou un string
+
+```{python}
+words = ['cat', 'window', 'defenestrate']
+for w in words:
+  print w, len(w)
+```
+
+```{python}
+for w in words[:]:  # Loop over a slice copy of the entire list.
+  if len(w) > 6:
+    words.insert(0, w)
+print(words)
+```
+
+### La fonction `range()`
+
+* Surtout utile pour les for, permet de générer une séquence d'entiers, renvoie une liste
+* avec un seul argument `stop` : liste qui débute à 0 de taille `stop`
+* avec 2 arguments `start`, `stop` : commence à `start` inclut, finit à `stop` exclut 
+* avec 3 arguments `start`, `stop`, `step`
+* tous les arguments doivent être des entiers
+
+```{python}
+range(10)
+range(5, 10)
+range(0, 10, 3)
+```
+
+### Définition de fonctions
+
+* avec le mot clé `def`
+* on peut mettre sur la première ligne un *docstring* pour documenter la fonction
+* une fonction sans `return` renvoie une valeur `None`
+
+```{python}
+def fib(n):    # write Fibonacci series up to n
+  """Print a Fibonacci series up to n."""
+  a, b = 0, 1
+  while a < n:
+    print a,  # la virgule pour imprimer à la suite (sinon c'est à la ligne)
+    a, b = b, a+b
+
+# Now call the function we just defined:
+fib(2000)
+```
+
+* La même mais en renvoyant le résultat dans une liste :
+
+```{python}
+def fib2(n):  # return Fibonacci series up to n
+  """Return a list containing the Fibonacci series up to n."""
+  result = []
+  a, b = 0, 1
+  while a < n:
+    result.append(a)    # see below
+    a, b = b, a+b
+  return result
+  
+print(fib2(100))
+```
+
+* une fonction peut avoir un argument par défaut avec `=`
+
 
 
 
