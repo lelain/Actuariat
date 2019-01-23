@@ -1,0 +1,213 @@
+---
+title: "Python - Introduction"
+author: "Brendan LE LAIN"
+date: "20 janvier 2019"
+output: html_document
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  out.width = "70%",
+  fig.align = 'center',
+  fig.width = 6,
+  fig.asp = 0.618  # 1 / phi
+)
+```
+
+# Sources
+
+* <https://docs.python.org/2/tutorial/introduction.html>
+
+## Opérations de base
+
+* commentaire : `#`
+* assignation : `=`
+* int : `a = 2`
+* float : `a = 2.0`
+* division classique : `/`
+
+```{python}
+print(5/2)
+print(5/2.0)
+```
+
+* division entière `//`
+
+```{python}
+print(5//2)
+```
+
+* reste de la division : `%`
+
+```{python}
+print(5 % 2)
+```
+
+* puissance : `**`
+
+```{python}
+print(3**3)
+```
+
+* en mode console, le résultat de la dernière opération est stockée dans la variable `_`
+
+## String
+
+* quotes simple ou double
+
+```{python}
+print('une chaine l\'agneau')
+print("l'agneau")
+```
+
+* concaténation : `+`
+* répétition : `*`
+
+```{python}
+print(3 * "un" + "deux")
+```
+
+* string sur plusieurs lignes : `""" ... """`
+* 2 strings côte à côte sont concaténés, marche seulement pour des strings (pas des variables). Pratique pour découper des strings longs
+
+```{python}
+text = ('Put several strings within parentheses '
+        'to have them joined together.')
+print(text)
+```
+
+* un string est indexable, commence par l'indice 0 :
+
+```{python}
+text = "Python"
+print(text[0])
+print(text[5])
+```
+
+* indice négatif pour compter de la fin
+
+```{python}
+print(text[-1])
+```
+
+* on peut avoir des sous-chaines avec `:`
+
+```{python}
+# des défaut pratiques :
+print(text[0:2]) # 0 inclut, 2 exclut
+print(text[:3])
+print(text[-2:])
+```
+
+* on ne peut pas changer directement une chaine
+
+```{}
+# erreur
+# text[2] = "x"   
+```
+
+* fonction `len()` pour avoir la taille du string
+
+```{python}
+print(len(text))
+```
+
+## List
+
+* peut être de type différent, mais c'est souvent le meme type
+
+```{python}
+une_list = [1, 2, 3]
+```
+
+* peut être indéxé comme les strings 
+
+```{python}
+print(une_list[0])  # renvoie un int
+print(une_list[:2])  # renvoie une liste
+```
+
+* les listes acceptent la concaténation
+
+```{python}
+print(une_list + [4, 5])
+```
+
+* les listes sont *mutables* (contrairement aux strings) : on peut changer leur valeur
+
+```{python}
+une_list[1] = 88
+print(une_list)
+```
+
+* on peut ajouter un élément avec la *méthode* `append()`
+
+```{python}
+une_list.append(100)
+print(une_list)
+```
+
+* on peut assigner à des *slices*, ça peut changer la taille de la liste ou même la vider complètement
+
+```{python}
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+print(letters)
+
+letters[2:5] = ['C', 'D', 'E']
+print(letters)
+
+letters[2:5] = []
+print(letters)
+
+letters[:] = []
+print(letters)
+```
+
+* on peut aussi utiliser la fonction `len()` pour les listes
+```{python}
+print(len(letters))
+```
+
+* on peut imbriquer les listes
+
+```{python}
+a = ['a', 'b', 'c']
+n = [1, 2, 3]
+x = [a, n]
+print(x)
+
+print(x[0])
+
+print(x[0][1])
+```
+
+## Programmation
+
+* assignation multiple
+
+```{python}
+a, b = 0, 1
+print(a)
+print(b)
+
+# erreur :
+# a, b = 0
+```
+
+* les expressions à droite de l'assignation sont évaluées en premier
+* l'indentation joue le rôle des accolades
+
+```{python}
+# Fibonacci series:
+# the sum of two elements defines the next
+a, b = 0, 1
+while b < 10:
+   print(b)
+   a, b = b, a+b
+```
+
+
+
+
+
