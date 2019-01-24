@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 * <https://docs.python.org/2/tutorial/introduction.html>
 
-## Opérations de base
+# Opérations de base
 
 * commentaire : `#`
 * assignation : `=`
@@ -52,7 +52,7 @@ print(3**3)
 
 * en mode console, le résultat de la dernière opération est stockée dans la variable `_`
 
-## String
+# String
 
 * quotes simple ou double
 
@@ -113,7 +113,7 @@ print(text[-2:])
 print(len(text))
 ```
 
-## List
+# List
 
 * peut être de type différent, mais c'est souvent le meme type
 
@@ -182,7 +182,7 @@ print(x[0])
 print(x[0][1])
 ```
 
-## Programmation
+# Programmation
 
 * assignation multiple
 
@@ -211,7 +211,7 @@ while b < 10:
    a, b = b, a+b
 ```
 
-### if 
+## if 
 
 * `elif` pour "else if"
 
@@ -228,7 +228,7 @@ else:
   print 'More'
 ```
 
-### for 
+## for 
 
 * Ressemble au `for` de R, on peut itérer aussi bien sur une suite d'entiers que sur une liste ou un string
 
@@ -245,7 +245,7 @@ for w in words[:]:  # Loop over a slice copy of the entire list.
 print(words)
 ```
 
-### La fonction `range()`
+## La fonction `range()`
 
 * Surtout utile pour les for, permet de générer une séquence d'entiers, renvoie une liste
 * avec un seul argument `stop` : liste qui débute à 0 de taille `stop`
@@ -259,7 +259,7 @@ range(5, 10)
 range(0, 10, 3)
 ```
 
-### Définition de fonctions
+## Définition de fonctions
 
 * avec le mot clé `def`
 * on peut mettre sur la première ligne un *docstring* pour documenter la fonction
