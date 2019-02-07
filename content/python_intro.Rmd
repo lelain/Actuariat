@@ -258,6 +258,8 @@ range(10)
 range(5, 10)
 range(0, 10, 3)
 ```
+Voir <https://docs.python.org/2.7/library/functions.html#range> pour documentation.
+
 
 ## Définition de fonctions
 
