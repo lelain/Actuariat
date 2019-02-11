@@ -113,7 +113,7 @@ print(text[-2:])
 print(len(text))
 ```
 
-# List
+# Listes
 
 * peut être de type différent, mais c'est souvent le meme type
 
@@ -283,8 +283,106 @@ print(reduce(add, range(1, 4))
 
 * un troisième argument peut être passé pour indiquer la valeur de départ.
 
-J'en suis : https://docs.python.org/2.7/tutorial/datastructures.html#list-comprehensions
+## *List comprehensions*
 
+* permet de créer des listes où chaque élément est le résultat d'une opération ou satisfait une condition.
+* créer avec `[]` et un `for` suivi de zéro ou plusieurs `for` ou `if`.
+
+Des exemples : 
+
+```{python}
+print([x**2 for x in range(10)])
+
+print([(x, y) for x in [1,2,3] for y in [3,1,4] if x != y])
+
+vec = [-4, -2, 0, 2, 4]
+
+# create a new list with the values doubled
+print([x*2 for x in vec])
+
+# filter the list to exclude negative numbers
+print([x for x in vec if x >= 0])
+
+# apply a function to all the elements
+print([abs(x) for x in vec])
+
+# call a method on each element
+freshfruit = ['  banana', '  loganberry ', 'passion fruit  ']
+print([weapon.strip() for weapon in freshfruit])
+
+# create a list of 2-tuples like (number, square)
+print([(x, x**2) for x in range(6)])
+
+# flatten a list using a listcomp with two 'for'
+vec = [[1,2,3], [4,5,6], [7,8,9]]
+print([num for elem in vec for num in elem])
+```
+
+## `del` statement
+
+* permet de supprimer une ou plusieurs valeur(s) d'une liste
+* peut aussi supprimer un objet entier
+
+```{python}
+a = [-1, 1, 66.25, 333, 333, 1234.5]
+del a[0]
+print(a)
+
+del a[2:4]
+print(a)
+
+del a[:]
+print(a)
+
+del a
+```
+ 
+# Tuples et Sequences
+
+* les strings et listes sont 2 exemples de types *sequence*. Le *tuple* en est un autre.
+* un tuple est un ensemble de valeurs (pouvant être de types différents) séparées par des virgules 
+* les tuples sont *immutable* (changer une valeur avec indice interdit : `t[0] = 1` renvoie une erreur). 
+
+```{python}
+t = 12345, 54321, 'hello!'
+print(t[0])
+print(t)
+
+# Tuples may be nested:
+u = t, (1, 2, 3, 4, 5)
+print(u)
+
+# Tuples are immutable:
+# t[0] = 88888  # erreur
+
+# but they can contain mutable objects:
+v = ([1, 2, 3], [3, 2, 1])
+print(v)
+```
+
+* différences avec les listes
+    + les tuples sont immutable, contiennent souvent des éléments hétérogènes, auxquels on accède par *unpacking* ou indices.
+    + les listes sont mutables, contiennent souvent des éléments de même type, auxquels on accède par itération sur la liste.
+* un tuple vide se construit avec une paire de parenthèses
+* un tuple avec une seule valeur se construit avec une valeur suivie d'une parenthèse
+
+```{python}
+empty = ()
+singleton = 'hello',    # <-- note trailing comma
+print(len(empty))
+
+print(len(singleton))
+print(singleton)
+```
+
+* packing et unpacking :
+    + packing : `t = 1, 2, 'abc'`, les 3 valeurs sont rassembler dans un tuple
+    + unpacking : `x, y, z = t`. Fonctionne pour n'importe quelle séquence `t` ; nécessite que les variables à gauche du signe égal soient du même nombre que la taille de la séquence.   
+
+
+***
+https://docs.python.org/2.7/tutorial/datastructures.html#sets
+***
 
 # Programmation
 
@@ -479,8 +577,9 @@ def parrot(voltage, state='a stiff', action='voom'):
     print "E's", state, "!"
 
 d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
-```
+
 print(parrot(**d))
+```
 
 ### lambda fonction
 
