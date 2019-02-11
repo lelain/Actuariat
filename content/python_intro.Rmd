@@ -182,6 +182,110 @@ print(x[0])
 print(x[0][1])
 ```
 
+## Méthodes des objets *list*
+
+* `list.append(x)` : ajoute un élément à la fin
+
+* `list.extend(L)` : ajoute les éléments de L à la fin
+
+* `list.insert(i, x)` : insert un élément avant la position donnée. `a.insert(0, x)` insert au début, `a.insert(len(a), x)` est équivalent à `a.append(x)`.
+
+* `list.remove(x)` : supprime le premier élément de la liste dont la valeur est `x`.
+
+* `list.pop([i])` : supprime l'élément à la position donnée, et renvoie cet élément. Si aucun indice n'est spécifié, `a.pop()` supprime et renvoie le dernier élément de la liste. (Les crochets dans la signature signifie que l'argument est optionnel). 
+
+```{python}
+a = [1, 3, 5]
+print(a.pop(1))
+print(a)
+
+print(a.pop())
+print(a)
+```
+
+* `list.index(x)` : renvoie l'indice du premier élément de la liste dont la valeur est `x`.
+
+* `list.count(x)` : renvoie le nombre de fois où `x` apparaît dans la liste.
+
+* `list.sort(cmp=None, key=None, reverse=False)` : tri les éléments de la liste, voir <https://docs.python.org/2.7/library/functions.html#sorted> pour explication des arguments.
+
+* `list.reverse()` : inverse les éléments de la liste.
+
+## Listes comme *stacks*
+
+* stack : une liste où le dernier élément ajouté est le premier à partir ("last-in, first-out"). 
+* Pour ajouter un élément sur le haut du stack, utiliser `append()`
+* Pour retirer un élément du haut du stack, utiliser `pop()`
+
+## Listes comme *queues*
+
+* queue : une liste où le premier élément ajouté est le premier à partir ("first-in, first-out"). 
+* *list* pas très efficace pour insérer au début car il faut décaler tous les éléments.
+* pour implémenter une *queue*, utiliser `collections.deque` qui permet des *appends* et *pops* rapides des 2 côtés.
+
+```[python}
+from collections import deque
+queue = deque(["Eric", "John", "Michael"])
+queue.append("Terry")           # Terry arrives
+queue.append("Graham")          # Graham arrives
+print(queue)
+queue.popleft()                 # The first to arrive now leaves
+print(queue)
+queue.popleft()                 # The second to arrive now leaves
+print(queue)        
+```
+
+## Outils pour la programmation fonctionnelle
+
+* 3 fonctions très utiles avec les listes : `filter()`, `map()` et `reduce()`.
+
+### `filter()`
+
+* `filter(function, sequence)` renvoie une séquence construites avec les éléments de la séquence pour lesquels `function(item)` est *True*.
+* Si *sequence* est `str`, `unicode` ou `tuple`, le résultat sera du même type. Sinon, le résultat est toujours une liste.
+
+```{python}
+# les nombres divisible par 3 ou 5
+def f(x): return x % 3 == 0 or x % 5 == 0
+
+print(filter(f, range(2, 25)))
+```
+
+### `map()`
+
+* `map(function, sequence)` appelle `function(item)` pour chaque élément de la séquence et renvoie une liste des éléments renvoyés.
+
+```{python}
+# pour calculer quelques cubes
+def cube(x): return x*x*x
+
+print(map(cube, range(1, 11)))
+```
+
+* il est possible de passer plusieurs séquences, alors la fonction doit avoir autant d'arguments que de séquences.
+
+```{python}
+seq = range(8)
+def add(x, y): return x+y
+
+print(map(add, seq, seq))
+```
+
+### `reduce()`
+
+* `reduce(function, sequence)` renvoie une seule valeur construite en appelant la fonction binaire (2 arguments) `function` sur les 2 premiers éléments de la séquence, puis sur le résultat et l'élément suivant, etc.
+
+```{python}
+def add(x, y): return x + y
+
+print(reduce(add, range(1, 4))
+```
+
+* un troisième argument peut être passé pour indiquer la valeur de départ.
+
+J'en suis : https://docs.python.org/2.7/tutorial/datastructures.html#list-comprehensions
+
+
 # Programmation
 
 * assignation multiple
@@ -260,15 +364,40 @@ range(0, 10, 3)
 ```
 Voir <https://docs.python.org/2.7/library/functions.html#range> pour documentation.
 
+## `in`
+
+* teste si une séquence contient une certaine valeur 
+
+```{pyton}
+'ok' in ('o', 'k')
+```
+
+## `pass`
+
+* `pass` ne fait rien
+* souvent utilisé pour créer une classe minimale 
+
+```{python}
+class MyEmptyClass:
+    pass
+```
+
+* peut être utilisé aussi pour définir une fonction de façon minimale
+
+```{python}
+def initlog(*args):
+    pass  # penser à faire ça !
+```
+
 
 ## Définition de fonctions
 
 * avec le mot clé `def`
-* on peut mettre sur la première ligne un *docstring* pour documenter la fonction
+* on peut mettre sur la première ligne un *docstring* pour documenter la fonction, c'est juste un string, plutôt avec `""" ... """`.
 * une fonction sans `return` renvoie une valeur `None`
 
 ```{python}
-def fib(n):    # write Fibonacci series up to n
+def fib(n):
   """Print a Fibonacci series up to n."""
   a, b = 0, 1
   while a < n:
@@ -282,19 +411,113 @@ fib(2000)
 * La même mais en renvoyant le résultat dans une liste :
 
 ```{python}
-def fib2(n):  # return Fibonacci series up to n
+def fib2(n):  
   """Return a list containing the Fibonacci series up to n."""
   result = []
   a, b = 0, 1
   while a < n:
-    result.append(a)    # see below
+    result.append(a)  
     a, b = b, a+b
   return result
   
 print(fib2(100))
 ```
-
+* `append()` est une méthode définie pour les listes, permet d'ajouter un élément à la fin de la liste. 
 * une fonction peut avoir un argument par défaut avec `=`
+
+### argument de la forme `*name`
+
+Pour construction d'une fonction :
+
+* reçoit un *tuple*
+* équivalent au `...` de R : reçoit un nombre indéterminé d'arguments qui sont mis dans un tuple
+
+Pour l'appel d'une fonction :
+
+* l'opérateur `*` permet de donner à une fonction des arguments contenus dans une liste
+
+```{python}
+print(range(3, 6))  # normal call with separate arguments
+
+args = [3, 6]
+print(range(*args)) 
+```
+
+### argument de la forme `**name`
+
+Pour construction d'une fonction :
+
+* reçoit un *dictionary* 
+
+```{pyhton}
+def cheeseshop(kind, *arguments, **keywords):
+    print "-- Do you have any", kind, "?"
+    print "-- I'm sorry, we're all out of", kind
+    for arg in arguments:
+        print arg
+    print "-" * 40
+    keys = sorted(keywords.keys())
+    for kw in keys:
+        print kw, ":", keywords[kw]
+
+print(cheeseshop("Limburger", 
+                 "It's very runny, sir.",
+                 "It's really very, VERY runny, sir.",
+                 shopkeeper='Michael Palin',
+                 client="John Cleese",
+                 Cheese="sketch Shop Sketch"))
+```
+
+Pour l'appel d'une fonction :
+
+* un dictionary permet d'appeler une fonction
+
+```{python}
+def parrot(voltage, state='a stiff', action='voom'):
+    print "-- This parrot wouldn't", action,
+    print "if you put", voltage, "volts through it.",
+    print "E's", state, "!"
+
+d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
+```
+print(parrot(**d))
+
+### lambda fonction
+
+* permet d'écrire des petites fonctions anonyme
+* avec le mot clé `lambda` 
+* exemple : `lambda a, b: a + b`
+
+### Documentation strings
+
+* sur la première ligne da définition de la fonction
+* doit être bref et résumer l'objectif de la fonction
+* cette ligne doit commencer par une majuscule et terminer par un point 
+* si il y a plusieurs lignes, la première doit être séparée du reste par une ligne vide
+
+```{python}
+def my_function():
+    """Do nothing, but document it.
+
+    No, really, it doesn't do anything.
+    """
+    pass
+
+print(my_function.__doc__)
+```
+
+# Coding style
+
+Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
+
+* utiliser une indentation avec 4 espaces, pas de tabulation
+* faire des lignes de 79 caractères maximum
+* lignes vides pour séparer les fonctions et les classes, et des blocs de code plus importants pour le corps des fonctions
+* utiliser la docstrings
+* nomage des classes : `CamelCase`
+* nomage des fonctions : `lower_case_with_underscores`
+
+
 
 
 
