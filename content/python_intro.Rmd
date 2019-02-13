@@ -379,10 +379,91 @@ print(singleton)
     + packing : `t = 1, 2, 'abc'`, les 3 valeurs sont rassembler dans un tuple
     + unpacking : `x, y, z = t`. Fonctionne pour n'importe quelle séquence `t` ; nécessite que les variables à gauche du signe égal soient du même nombre que la taille de la séquence.   
 
+# Sets
 
-***
-https://docs.python.org/2.7/tutorial/datastructures.html#sets
-***
+* un *set* est une collection non ordonnée sans doublons
+* les sets supportent les opérations comme l'union, l'intersection et la différence
+* pour créer un set : 
+    + soit les `{}`
+    + soit la fonction `set()`
+* pour créer un set vide, il faut utiliser `set()`. Si on utilise `{}` cela crée un dictionnaire vide.
+
+```{pyhton}
+# une liste
+basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
+fruit = set(basket)    # create a set without duplicates
+print(fruit)
+
+print('orange' in fruit)    # fast membership testing
+print('crabgrass' in fruit)
+
+# Demonstrate set operations on unique letters from two words
+a = set('abracadabra')
+b = set('alacazam')
+print(a)  # unique letters in a
+
+print(a - b)  # letters in a but not in b
+
+print(a | b)  # letters in either a or b
+
+print(a & b)  # letters in both a and b
+
+print(a ^ b)  # letters in a or b but not both   
+```
+
+* comme pour les *list comprehensions*, les *set comprehensions* sont aussi supportés :
+
+```{python}
+a = {x for x in 'abracadabra' if x not in 'abc'}
+print(a)
+```
+
+# Dictionnaires
+
+* les dictionnaires sont indéxés par des *clés* qui peuvent être n'importe quel type immutable, en général des strings ou nombres.
+* on peut penser à un dictionnaire comme à un set de paires *clé: valeur*, avec la nécessité que les clés soient uniques (dans un dictionnaire).
+* `{}` pour créer un dictionnaire vide.
+* pour ajouter des valeurs initiales au dictionnaire, ajouter dans les accolades une liste de *clé: valeur* séparés par des `,`.
+* pour supprimer une paire *clé: valeur*, utiliser `del`.
+* `keys()` permet de récupérer toutes les clés du dictionnaire dans un ordre arbitraire (utiliser `sorted()` pour les trier).
+* `in` pour tester si une valeur est une clé du dictionnaire.
+
+```{python}
+tel = {'jack': 4098, 'sape': 4139}
+tel['guido'] = 4127  # ajouter une paire clé:valeur
+print(tel)
+
+print(tel['jack'])
+
+del tel['sape']
+tel['irv'] = 4127
+print(tel)
+
+print(tel.keys())
+
+print('guido' in tel)
+```
+
+* le constructeur `dict()` pour créer un dictionnaire à partir d'une séquence :
+
+```{python}
+d = dict([('sape', 4139), ('guido', 4127), ('jack', 4098)])
+print(d)
+```
+
+* les dictionnaires comprehensions peuvent aussi être utilisés :
+
+```{python}
+d = {x: x**2 for x in (2, 4, 6)}
+print(d)
+```
+
+* quand les clés sont simples, on peut les spécifier en utilisant des arguments (sans quotes) : 
+
+```{python}
+d = dict(sape=4139, guido=4127, jack=4098)
+print(d)
+```
 
 # Programmation
 
@@ -413,7 +494,9 @@ while b < 10:
    a, b = b, a+b
 ```
 
-## if 
+## Conditions 
+
+### if 
 
 * `elif` pour "else if"
 
@@ -430,7 +513,47 @@ else:
   print 'More'
 ```
 
-## for 
+### `in`
+
+* teste si une séquence contient une certaine valeur 
+* `not in` pour le contraire
+
+```{pyton}
+print('ok' in ('o', 'k'))
+print('ok' not in ('o', 'k'))
+```
+
+### `is`
+
+* teste si 2 objets sont les mêmes
+* `is not` pour le contraire
+
+```{pyton}
+print(['a', 'b'] is ['b', 'a'])
+print(['a', 'b'] is not ['b', 'a'])
+```
+
+### Chaînage des opérateurs de comparaison
+
+* on peut chaîner les opérateurs de comparaison : `x != y != z` est équivalent à `x != y and y != z`.
+
+### Comparaison de séquence
+
+* les séquences (tuples, lists, strings en particulier) sont comparés élément par élément : 
+
+```{python}
+print((1, 2, 3)              < (1, 2, 4))
+print([1, 2, 3]              < [1, 2, 4])
+print('ABC' < 'C' < 'Pascal' < 'Python')
+print((1, 2, 3, 4)           < (1, 2, 4))
+print((1, 2)                 < (1, 2, -1))
+print((1, 2, 3)             == (1.0, 2.0, 3.0))
+print((1, 2, ('aa', 'ab'))   < (1, 2, ('abc', 'a'), 4))
+```
+
+## Boucles
+
+### for 
 
 * Ressemble au `for` de R, on peut itérer aussi bien sur une suite d'entiers que sur une liste ou un string
 
@@ -447,6 +570,54 @@ for w in words[:]:  # Loop over a slice copy of the entire list.
 print(words)
 ```
 
+* quand on boucle sur une séquence, on peut obtenir en même temps l'indice et la valeur correspondante avec `enumerate()` : 
+
+```{python}
+for i, v in enumerate(['tic', 'tac', 'toe']):
+    print i, v
+```
+
+* quand on souhaite boucler sur 2 (ou plus) séquences à la fois, on peut utiliser la fonction `zip()` qui assemble les séquences : 
+
+```{python}
+questions = ['name', 'quest', 'favorite color']
+answers = ['lancelot', 'the holy grail', 'blue']
+print(zip(questions, answers))
+
+for q, a in zip(questions, answers):
+    print 'What is your {0}?  It is {1}.'.format(q, a)
+```
+
+* pour boucler à l'envers sur une séquence, utiliser la fonction `reversed()` : 
+
+```{python}
+for i in reversed(range(1,10,2)):
+    print i
+```
+
+* quand on boucle sur un dictionnaire, la clé et la valeur correspondante peuvent être obtenues en même temps avec `iteritems()` : 
+
+```{python}
+knights = {'gallahad': 'the pure', 'robin': 'the brave'}
+for k, v in knights.iteritems():
+    print k, v
+```
+
+* au lieu de changer une liste lorsqu'on boucle dessus, il est souvent plus simple et rapide de créer une nouvelle liste : 
+
+```{python}
+import math
+raw_data = [56.2, float('NaN'), 51.7, 55.3, 52.5, float('NaN'), 47.8]
+filtered_data = []
+for value in raw_data:
+    if not math.isnan(value):
+        filtered_data.append(value)
+
+print(filtered_data)
+```
+
+
+
 ## La fonction `range()`
 
 * Surtout utile pour les for, permet de générer une séquence d'entiers, renvoie une liste
@@ -461,14 +632,6 @@ range(5, 10)
 range(0, 10, 3)
 ```
 Voir <https://docs.python.org/2.7/library/functions.html#range> pour documentation.
-
-## `in`
-
-* teste si une séquence contient une certaine valeur 
-
-```{pyton}
-'ok' in ('o', 'k')
-```
 
 ## `pass`
 
@@ -488,7 +651,7 @@ def initlog(*args):
 ```
 
 
-## Définition de fonctions
+# Définition de fonctions
 
 * avec le mot clé `def`
 * on peut mettre sur la première ligne un *docstring* pour documenter la fonction, c'est juste un string, plutôt avec `""" ... """`.
@@ -523,7 +686,7 @@ print(fib2(100))
 * `append()` est une méthode définie pour les listes, permet d'ajouter un élément à la fin de la liste. 
 * une fonction peut avoir un argument par défaut avec `=`
 
-### argument de la forme `*name`
+## argument de la forme `*name`
 
 Pour construction d'une fonction :
 
@@ -541,7 +704,7 @@ args = [3, 6]
 print(range(*args)) 
 ```
 
-### argument de la forme `**name`
+## argument de la forme `**name`
 
 Pour construction d'une fonction :
 
@@ -581,13 +744,13 @@ d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
 print(parrot(**d))
 ```
 
-### lambda fonction
+## lambda fonction
 
 * permet d'écrire des petites fonctions anonyme
 * avec le mot clé `lambda` 
 * exemple : `lambda a, b: a + b`
 
-### Documentation strings
+## Documentation strings
 
 * sur la première ligne da définition de la fonction
 * doit être bref et résumer l'objectif de la fonction
@@ -617,8 +780,31 @@ Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
 * nomage des fonctions : `lower_case_with_underscores`
 
 
+# Modules
+
+* Un module est un fichier `.py` contenant des définitions en Python.
+* Le nom du fichier est le nom du module, qui est accessible avec la variable globale `__name__`.
+* pour importer un module : `import nom_module`.
+* puis pour utiliser les fonctions de ce module : `nom_module.nom_fonction()`
+
+## `import`
+
+* pour importer seulement quelques fonctions du module : `from nom_module import f_1, f_2`. Cela permet d'appeler `f_1()` sans `nom_module.` devant.
+
+* pour importer toutes les fonctions du module sauf celles commençant par `_` : `from nom_module import *`. (Plutôt déconseillé).
+
+* pour changer le nom de référence du module : `import nom_module as mod`. Permet d'appeler `f_1()` avec `mod.f_1()`.
+
+## fonction `dir()`
+
+* sans argument, renvoie les noms que l'on a défini
+* avec un module en argument, renvoie les noms que ce module définis
+* pour avoir le noms des *built-in* fonctions et variables, c'est dans le module `__builtin__` : faire `dir(__builtin__)`. 
 
 
+***
+https://docs.python.org/2.7/tutorial/modules.html#packages
+***
 
 
 
