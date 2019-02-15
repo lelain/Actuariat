@@ -801,11 +801,57 @@ Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
 * avec un module en argument, renvoie les noms que ce module définis
 * pour avoir le noms des *built-in* fonctions et variables, c'est dans le module `__builtin__` : faire `dir(__builtin__)`. 
 
+## Package
+
+* un package est un ensemble de modules.
+* c'est un répertoire qui doit comprendre un fichier `__init__.py` et d'autres répertoires avec des fichiers `.py` (=modules). 
+
+## Input et output
+
+* voir la fonction `str.format()` pour formatter des strings (<https://docs.python.org/2.7/library/stdtypes.html#str.format>). 
+* ajouter `:` puis un format pour gérer la manière dont la valeur sera imprimée (voir <https://docs.python.org/2.7/library/string.html#formatstrings>.
+
+```{python}
+# Entre accolades, peut mettre soit un indice ou un argument 
+"The sum of 1 + 2 is {0}".format(1+2)
+"The sum of 2 * 3.333 is {res:.2f}".format(res = 2*3.333)
+```
+ 
+* `repr()` ou `str()` pour convertir un objet en string
+* `str.rjust()`, `str.ljust()` et `str.center()` : pour justifier à droite, gauche, centre pour un champs d'une largeur donné et ajoutant dans espaces où il faut.
+* `str.zfill()` pour padding un string numérique avec des zéros à gauche.
+
+### Lire et écrire des fichiers
+
+* la fonction `open()` renvoie un objet *file*. En général 2 arguments : `open(filename, mode)`.
+* `mode` peut être :
+    + `'r'` pour read only (par défaut)
+    + `'w'` pour write only
+    + `'a'` pour append
+    + `'r+'` pour read et write
+
+* pour un objet file `f`, `f.read(size)` lit la quantité de données fournit. Sans argument, lit tout le fichier. Renvoie `''` quand tout le fichier a été lu.
+* `f.readline()` pour lire une seule ligne du fichier. Renvoie `''` quand tout le fichier a été lu.
+* Si on veut lire toutes les lignes du fichier dans une liste, on peut utiliser `list(f)` ou `f.readlines()`
+
+* `f.write(string)` écrit le string dans le fichier, et renvoie `None`.
+* `f.tell()` renvoie un entier donnant la position actuel dans le fichier. Pour changer la position dans le fichier, utiliser `f.seek(offset, from_what)` : la nouvelle position est calculée en ajoutant *offset* à la position de référence donnée par *from_what*.
+    + si *from_what* = 0 : début du fichier (par défaut)
+    + si *from_what* = 1 : position courrante
+    + si *from_what* = 2 : fin du fichier
+
+* `f.close()` pour fermer le fichier.
+* bonne habitude d'utiliser `with` quand on travaille avec des objets *file*, permet de s'assurer que le fichier est correctement fermé : 
+
+```{python}
+with open('workfile', 'r') as f:
+    read_data = f.read()
+
+print(f.closed)
+```
 
 ***
-https://docs.python.org/2.7/tutorial/modules.html#packages
+https://docs.python.org/2.7/tutorial/inputoutput.html#saving-structured-data-with-json
 ***
-
-
 
 
