@@ -651,7 +651,7 @@ def initlog(*args):
 ```
 
 
-# Définition de fonctions
+# Fonctions
 
 * avec le mot clé `def`
 * on peut mettre sur la première ligne un *docstring* pour documenter la fonction, c'est juste un string, plutôt avec `""" ... """`.
@@ -768,6 +768,37 @@ def my_function():
 print(my_function.__doc__)
 ```
 
+# Classes
+
+* Exemple simple qui définit 2 attributs `MyClass.i` (un entier) et `MyClass.f` (une fonction) :
+
+```{python}
+class MyClass:
+    """A simple example class"""
+    i = 12345
+
+    def f(self):
+        return 'hello world'
+```
+
+* `MyClass.__doc__` renvoie la docstring de la classe.
+
+* on peut instantier une classe avec `x = MyClass()`.
+* si on appelle `MyClass.f(x)` on a un appel de fonction. Si on appelle `x.f()` on a un appelle de méthode.
+* pour une instantiation personnaliser, il faut définir la méthode `__init__()` : 
+
+```{python}
+class Complex:
+    def __init__(self, realpart, imagpart):
+        self.r = realpart
+        self.i = imagpart
+
+x = Complex(3.0, -4.5)
+print(x.r, x.i)
+```
+
+
+
 # Coding style
 
 Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
@@ -850,8 +881,24 @@ with open('workfile', 'r') as f:
 print(f.closed)
 ```
 
-***
-https://docs.python.org/2.7/tutorial/inputoutput.html#saving-structured-data-with-json
-***
+### JSON
+
+* Pour sauvegarder des données contenues dans type Python, utiliser le module standard *json*. Revient à de la sérialisation.
+* fonction `json.dumps()` pour avoir la représentation JSON d'un objet
+* `json.dump(x, f)` pour sérialiser `x` dans le fichier `f`.
+* `json.load(f)` pour lire le fichier json.
+
+```{python}
+import json
+json.dumps([1, 'simple', 'list'])
+```
+
+# Exceptions
+
+* Voir <https://docs.python.org/2.7/tutorial/errors.html>
+
+
+
+
 
 
