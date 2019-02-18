@@ -784,7 +784,7 @@ class MyClass:
 * `MyClass.__doc__` renvoie la docstring de la classe.
 
 * on peut instantier une classe avec `x = MyClass()`.
-* si on appelle `MyClass.f(x)` on a un appel de fonction. Si on appelle `x.f()` on a un appelle de méthode.
+* si on appelle `MyClass.f(x)` on a un appel de fonction. Si on appelle `x.f()` on a un appel de méthode. Une méthode est une fonction qui appartient à un objet.
 * pour une instantiation personnaliser, il faut définir la méthode `__init__()` : 
 
 ```{python}
@@ -797,7 +797,172 @@ x = Complex(3.0, -4.5)
 print(x.r, x.i)
 ```
 
+* les méthodes peuvent appeler d'autres méthodes de la classe avec l'argument `self` : 
 
+```{python}
+class Bag:
+    def __init__(self):
+        self.data = []
+
+    def add(self, x):
+        self.data.append(x)
+
+    def addtwice(self, x):
+        self.add(x)
+        self.add(x)
+```
+
+* chaque valeur est un objet, et a donc une classe (type). Cette classe se trouve dans `object.__class__`.
+
+## Héritage
+
+* syntaxe pour une classe dérivée : 
+
+```{python}
+class DerivedClassName(BaseClassName):
+    <statement1>
+    ...
+    <statementn>
+```
+
+* la classe de base peut être définie dans un autre module : `class DerivedClassName(modname.BaseClassName):`.
+
+* si un attribut n'est pas trouvé dans la classe, il est cherché dans la classe de base.
+
+* 2 built-in fonctions pour l'héritage : 
+    + `isinstance()` pour tester le type ded l'instance : `isinstance(obj, int)` sera `True` seulement si `obj.__class__` est `int` ou une classe dérivée de `int`.
+    + `issubclass()` pour tester l'héritage d'une classe : `issubclass(bool, int)` est `True` car `bool` est une sous-classe de `int`.
+
+## Variables privées
+
+* les variables privées (accessibles seulement à l'intérieur d'un objet) n'existe pas en Python. Mais, il y a la convention : un nom préfixé par un underscore (`_spam`) doit être traité comme une partie non publique de l'API (que ce soit une fonction, une méthode ou une donnée). 
+
+
+## Variables de classe et d'instance
+
+* variable de classe : partagée par toutes les instances de la classe
+* variable d'instance : définie dans la fonction `__init__()`, unique pour chaque instance.
+
+Mauvaise implémentation d'une variable de classe :
+
+```{python}
+class Dog:
+
+    tricks = []   # mistaken use of a class variable
+
+    def __init__(self, name):
+        self.name = name
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+d = Dog('Fido')
+e = Dog('Buddy')
+d.add_trick('roll over')
+e.add_trick('play dead')
+print(d.tricks)                # unexpectedly shared by all dogs
+```
+
+Bonne implémentation, en utilisant une variable d'instance : 
+
+```{python}
+class Dog:
+
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []    # creates a new empty list for each dog
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+d = Dog('Fido')
+e = Dog('Buddy')
+d.add_trick('roll over')
+e.add_trick('play dead')
+print(d.tricks)
+print(e.tricks)
+```
+
+## Itérateur
+
+* pour fonctionner `for` appelle `iter()` sur l'objet *container*. Cette fonction renvoie un objet *iterator* qui défini une méthode `next()` qui accède aux éléments du container un par un. Quand il n'y a plus d'éléments, `next()` lève une exception qui dit au `for` de terminer.
+
+```{pyhton}
+s = 'abc'
+it = iter(s)
+print(it)
+
+print(it.next())
+print(it.next())
+print(it.next())
+print(it.next())
+```
+
+* Ainsi, il est possible d'ajouter un iterator à une classe. Il faut définit une méthode `__iter__()` qui renvoie un objet avec une méthode `next()`. Si la classe définie déjà une méthode `next()`, alors `__iter__()` peut se contenter de renvoyer `self` : 
+
+```{python}
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+
+rev = Reverse('spam')
+print(iter(rev))
+
+for char in rev:
+    print char
+```
+
+## Générateur
+
+* outil pour créer des itérateurs plus simplement.
+* s'écrit comme une fonction classique mais avec un *statement* `yield` lorsqu'on souhaite renvoyer la donnée.
+* à chaque fois que `next()` est appelé sur le générateur, il s'arrête dans l'état courant, en sauvegardant cet état.
+* tout ce qui peut être fait avec un générateur peut l'être avec une classe itérateur (paragraphe précédent). Ce qui rend le générateur plus compacte est que les méthode `__iter__()` et `next()` sont crées automatiquement.
+* de plus lorsque le générateur se termine, il lève automatiquement une exception `StopIteration`.
+
+L'exemple précédent pourrait être écrit avec un générateur comme :
+
+```{python}
+# range(5, -1, -1)  : start = 5, stop = -1 (exclu), step = -1
+def reverse(data):
+    for index in range(len(data)-1, -1, -1):
+        yield data[index]
+
+for char in reverse('golf'):
+    print char
+```
+
+* Les générateurs simples peuvent être codés succintement comme une expression utilisant une syntaxe similaire aux *list comprehensions* mais avec des parenthèses à la place des crochets.
+* fait pour être utilisé directement dans un argument d'une fonction.
+
+```{python}
+print((i*i for i in range(4)).__class__)
+print(sum(i*i for i in range(4)))   # sum of squares
+
+xvec = [1, 2, 3]
+yvec = [7, 5, 3]
+print(sum(x*y for x,y in zip(xvec, yvec)))   # dot product
+
+from math import pi, sin
+sine_table = dict((x, sin(x*pi/180)) for x in range(0, 91))
+
+page = "abc def aabb, c"
+unique_words = set(word  for line in page  for word in line.split())   # split() identifie les mots dans une phrase
+
+data = 'golf'
+print(list(data[i] for i in range(len(data)-1,-1,-1)))
+```
 
 # Coding style
 
