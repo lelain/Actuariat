@@ -1048,7 +1048,7 @@ print(f.closed)
 
 ### JSON
 
-* Pour sauvegarder des données contenues dans type Python, utiliser le module standard *json*. Revient à de la sérialisation.
+* Pour sauvegarder des données contenues dans un objet Python, utiliser le module standard *json*. Revient à de la sérialisation.
 * fonction `json.dumps()` pour avoir la représentation JSON d'un objet
 * `json.dump(x, f)` pour sérialiser `x` dans le fichier `f`.
 * `json.load(f)` pour lire le fichier json.
@@ -1063,7 +1063,110 @@ json.dumps([1, 'simple', 'list'])
 * Voir <https://docs.python.org/2.7/tutorial/errors.html>
 
 
+# Librairie standard
 
+## `os`
 
+* module contenant des fonctions pour intérargir avec l'OS.
+* voir `dir(os)` pour la liste des fonctions du module
+* `help(os)` pour pages d'aide du module
 
+```{python}
+import os
+print(os.getcwd())   # get the current working directory
+print(os.system('ls -a'))   # Run the command in the system shell
+```
+
+* pour tâches de gestion de fichiers, le module `shutil` est plus sympa.
+* module `glob` pour avoir une liste de dossiers avec des recherches *wildcard* : 
+
+```{python}
+import glob
+print(glob.glob('*.py'))
+```
+
+## `sys`
+
+* liste des arguments avec l'attrbut `argv` lorsqu'un script python est exécuté avec des arguments.
+* aussi les attributs `stdin`, `stdout` et `stderr`. Utile par exemple pour rediriger des warnings ou erreurs.
+* pour terminer un script : `sys.exit()`.
+
+## `re`
+
+* le module `re` contient des outils pour travailler avec les expressions régulières.
+* utile pour complexe recherche sur les strings.
+* si opération simple, préférer les méthodes de la classe string.
+
+## Maths
+
+* module `math`
+* module `random` pour sélection aléatoire : 
+
+```{python}
+import random
+print(random.choice(['apple', 'pear', 'banana']))
+print(random.sample(xrange(100), 10))   # sampling without replacement
+
+print(random.random())    # random float
+print(random.randrange(6))    # random integer chosen from range(6)
+```
+
+## `datetime`
+
+* pour manipulation de date et de temps : 
+
+```{python}
+# dates are easily constructed and formatted
+from datetime import date
+now = date.today()
+print(now)
+
+print(now.strftime("%m-%d-%y. %d %b %Y is a %A on the %d day of %B."))
+
+# dates support calendar arithmetic
+birthday = date(1988, 7, 26)
+age = now - birthday
+print(age.days)
+```
+
+## Compression de données
+
+* modules pour la compression dans différents formats : `zlib`, `gzip`, `bz2`, `zipfile` et `tarfile`.
+
+## Mesures de performances
+
+* module `timeit` pour comparer la performance de plusieurs approches.
+* `profile` et `pstats` pour identifier les parties de code lentes.
+
+```{python}
+from timeit import Timer
+print(Timer('t=a; a=b; b=t', 'a=1; b=2').timeit())
+print(Timer('a,b = b,a', 'a=1; b=2').timeit())
+```
+
+## Contrôles de qualité (tests)
+
+* module `doctest` permet de mettre le test dans la docstring (en gros en copiant collant le résultat d'un appel) : 
+
+```{python}
+def average(values):
+    """Computes the arithmetic mean of a list of numbers.
+
+    >>> print average([20, 30, 70])
+    40.0
+    """
+    return sum(values, 0.0) / len(values)
+
+import doctest
+doctest.testmod()   # automatically validate the embedded tests
+```
+
+* module `unittest` pour des tests plus complets, à maintenir dans un fichier de test à part.
+
+## Formats d'output
+
+* module `repr` pour impression abbrégée d'objets larges
+* `pprint` pour un contrôle plus sophistiqué de l'impression 
+* `textwrap` pour l'impression de paragraphe de texte avec une largeur donnée
+* `locale` pour imprimer des données avec les conventions de différents pays. 
 
