@@ -15,9 +15,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Sources
+# Ressources
 
-* <https://docs.python.org/2/tutorial/introduction.html>
+* Tutoriel : <https://docs.python.org/2/tutorial/introduction.html>
+* Python standard library : <https://docs.python.org/2.7/library/index.html#library-index>
+* Python language reference : <https://docs.python.org/2.7/reference/index.html#reference-index>
+
+# Coding style
+
+Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
+
+* utiliser une indentation avec 4 espaces, pas de tabulation
+* faire des lignes de 79 caractères maximum
+* lignes vides pour séparer les fonctions et les classes, et des blocs de code plus importants pour le corps des fonctions
+* utiliser la docstrings
+* nomage des classes : `CamelCase`
+* nomage des fonctions : `lower_case_with_underscores`
 
 # Opérations de base
 
@@ -377,7 +390,7 @@ print(singleton)
 
 * packing et unpacking :
     + packing : `t = 1, 2, 'abc'`, les 3 valeurs sont rassembler dans un tuple
-    + unpacking : `x, y, z = t`. Fonctionne pour n'importe quelle séquence `t` ; nécessite que les variables à gauche du signe égal soient du même nombre que la taille de la séquence.   
+    + unpacking : `x, y, z = t`. Fonctionne pour n'importe quelle séquence `t` ; nécessite que les variables à gauche du signe égal soient du même nombre que la taille de la séquence.
 
 # Sets
 
@@ -616,8 +629,6 @@ for value in raw_data:
 print(filtered_data)
 ```
 
-
-
 ## La fonction `range()`
 
 * Surtout utile pour les for, permet de générer une séquence d'entiers, renvoie une liste
@@ -649,7 +660,6 @@ class MyEmptyClass:
 def initlog(*args):
     pass  # penser à faire ça !
 ```
-
 
 # Fonctions
 
@@ -767,6 +777,126 @@ def my_function():
 
 print(my_function.__doc__)
 ```
+
+# Exceptions
+
+* une exception : une erreur détectée à l'exécution (différent d'une erreur de syntaxe). Par exemple : 
+
+```{}
+>>> 10 * (1/0)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: integer division or modulo by zero
+>>> 4 + spam*3
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'spam' is not defined
+>>> '2' + 2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: cannot concatenate 'str' and 'int' objects
+```
+
+* une exception a un type, dans les exemples précédents : `ZeroDivisionError`, `NameError` et `TypeError`. Voir <https://docs.python.org/2.7/library/exceptions.html#bltin-exceptions> pour la liste des *built-in* exceptions.
+
+## Gestion de la survenance d'une exception 
+
+* Pour gérer les exceptions : `try`. Exemple où on demande à l'utilisateur un nombre jusqu'à ce qu'un nombre valide soit entré ou qu'on termine le programme avec Ctrl + C (lève une exception `KeyboardInterrupt`) :
+
+```{python}
+while True:
+    try:
+        x = int(raw_input("Please enter a number: "))
+        print "ok"
+        break
+    except ValueError:
+        print "Oops!  That was no valid number.  Try again..."
+    except KeyboardInterrupt:
+        print "Fin"
+        break
+```
+
+* le *statement* `try` fonctionne comme cela : 
+    + d'abord le contenu du `try` est exécuté
+    + si aucune exception n'apparaît, la partie `except` n'est pas exécutée et le `try` se termine.
+    + si une exception apparaît dans le `try`, le reste du `try` n'est pas exécuté et si le type de l'exception correspond au nom suivant le `except` alors cette partie est exécutée 
+    + une clause `except` peut gérer plusieurs exceptions : `except (RuntimeError, TypeError, NameError):` (les parenthèses sont obligatoires).
+* le `try` peut avoir un optionel `else` qui permet d'exécuter le code si aucune exception n'est trouvée. Le `else` est à placer après les `except`. 
+
+```{python}
+while True:
+    try:
+        x = int(raw_input("Please enter a number: "))
+    except ValueError:
+        print "Oops!  That was no valid number.  Try again..."
+    else:
+        print "ok"
+        break
+```
+
+* une exception peut avoir un (ou plusieurs) argument, sa présence et type dépende du type de l'exception.
+* dans la clause `except` on peut utiliser `as` suivi d'un nom pour se référer à l'exception : instance de l'exception.
+* les arguments éventuels de l'exception sont stockés dans `instance.args`.
+* l'instance de l'exception définie la fonction `__str__()` (qui est appelé par `print` pour imprimer le contenu d'un objet), on peut donc imprimer les arguments sans avoir à se référer à `.args`.
+
+```{}
+>>> try:
+...     raise Exception('spam', 'eggs')   # l'exception a 2 arguments
+... except Exception as inst:     # on instancie l'exception
+...     print type(inst)     # the exception instance
+...     print inst.args      # arguments stored in .args
+...     print inst           # __str__() allows args to be printed directly
+...     x, y = inst.args
+...     print 'x =', x
+...     print 'y =', y
+...
+<type 'exceptions.Exception'>
+('spam', 'eggs')
+('spam', 'eggs')
+x = spam
+y = eggs
+```
+
+## Lever une exception
+
+* le statement `raise` permet de forcer d'apparition d'une exception. 
+* le seul argument de `raise` doit être une classe d'exception (classe dérivée de `Exception`).
+
+```{}
+>>> raise NameError('HiThere')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: HiThere
+```
+
+* pour savoir si une exception a été levée mais qu'on ne cherche pas à la gérer, on peut utiliser `raise` seul pour le lever de nouveau : 
+
+```{python}
+try:
+    raise NameError('HiThere')
+except NameError:
+    print 'An exception flew by!'
+    raise
+```
+
+* le statement `try` a une autre clause optionnelle `finally` qui s'exécute de toute façon (qu'il y ait ou non une exection de levée). Fait pour y mettre des opérations de nettoyage, en particulier pour fermeture de fichiers ou connections.
+
+```{python}
+def divide(x, y):
+    try:
+        result = x / y
+    except ZeroDivisionError:
+        print "division by zero!"
+    else:
+        print "result is", result
+    finally:
+        print "executing finally clause"
+
+print(divide(2, 1))
+print(divide(2, 0))
+print(divide("2", "1"))
+```
+
 
 # Classes
 
@@ -964,16 +1094,60 @@ data = 'golf'
 print(list(data[i] for i in range(len(data)-1,-1,-1)))
 ```
 
-# Coding style
+## Classe exception définie par l'utilisateur
 
-Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
+* en général, on crée la classe en la faisant dériver de la classe `Exception`.
 
-* utiliser une indentation avec 4 espaces, pas de tabulation
-* faire des lignes de 79 caractères maximum
-* lignes vides pour séparer les fonctions et les classes, et des blocs de code plus importants pour le corps des fonctions
-* utiliser la docstrings
-* nomage des classes : `CamelCase`
-* nomage des fonctions : `lower_case_with_underscores`
+```{python}
+# MyError dérive de Exception
+class MyError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+try:
+    raise MyError(2*2)
+except MyError as e:
+    print 'My exception occurred, value:', e.value
+
+raise MyError('oops!')
+```
+
+* quand on crée un module qui peut lever plusieurs exceptions distinctes, la convention est de créer une classe de base pour les exceptions définies dans ce module et de faire des classes dérivées pour créer des classes d'exceptions spécifiques pour chaque erreur : 
+
+```{python}
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class InputError(Error):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expr -- input expression in which the error occurred
+        msg  -- explanation of the error
+    """
+
+    def __init__(self, expr, msg):
+        self.expr = expr
+        self.msg = msg
+
+class TransitionError(Error):
+    """Raised when an operation attempts a state transition that's not
+    allowed.
+
+    Attributes:
+        prev -- state at beginning of transition
+        next -- attempted new state
+        msg  -- explanation of why the specific transition is not allowed
+    """
+
+    def __init__(self, prev, next, msg):
+        self.prev = prev
+        self.next = next
+        self.msg = msg
+```
 
 
 # Modules
@@ -1002,7 +1176,8 @@ Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
 * un package est un ensemble de modules.
 * c'est un répertoire qui doit comprendre un fichier `__init__.py` et d'autres répertoires avec des fichiers `.py` (=modules). 
 
-## Input et output
+
+# Input et output
 
 * voir la fonction `str.format()` pour formatter des strings (<https://docs.python.org/2.7/library/stdtypes.html#str.format>). 
 * ajouter `:` puis un format pour gérer la manière dont la valeur sera imprimée (voir <https://docs.python.org/2.7/library/string.html#formatstrings>.
@@ -1017,7 +1192,7 @@ Voir <https://www.python.org/dev/peps/pep-0008/> pour le style guide complet.
 * `str.rjust()`, `str.ljust()` et `str.center()` : pour justifier à droite, gauche, centre pour un champs d'une largeur donné et ajoutant dans espaces où il faut.
 * `str.zfill()` pour padding un string numérique avec des zéros à gauche.
 
-### Lire et écrire des fichiers
+## Lire et écrire des fichiers
 
 * la fonction `open()` renvoie un objet *file*. En général 2 arguments : `open(filename, mode)`.
 * `mode` peut être :
@@ -1046,7 +1221,7 @@ with open('workfile', 'r') as f:
 print(f.closed)
 ```
 
-### JSON
+## JSON
 
 * Pour sauvegarder des données contenues dans un objet Python, utiliser le module standard *json*. Revient à de la sérialisation.
 * fonction `json.dumps()` pour avoir la représentation JSON d'un objet
@@ -1057,10 +1232,6 @@ print(f.closed)
 import json
 json.dumps([1, 'simple', 'list'])
 ```
-
-# Exceptions
-
-* Voir <https://docs.python.org/2.7/tutorial/errors.html>
 
 
 # Librairie standard
@@ -1109,6 +1280,19 @@ print(random.sample(xrange(100), 10))   # sampling without replacement
 
 print(random.random())    # random float
 print(random.randrange(6))    # random integer chosen from range(6)
+```
+
+* module `decimal` pour l'arithmétique sur des nombres décimaux
+
+```{python}
+from decimal import *
+x = Decimal('0.70') * Decimal('1.05')
+print(x)
+print(x.quantize(Decimal('0.01')))  # round to nearest cent
+print(round(.70 * 1.05, 2))         # same calculation with floats
+
+print(sum([Decimal('0.1')]*10) == Decimal('1.0'))
+print(sum([0.1]*10) == 1.0)
 ```
 
 ## `datetime`
@@ -1167,6 +1351,15 @@ doctest.testmod()   # automatically validate the embedded tests
 
 * module `repr` pour impression abbrégée d'objets larges
 * `pprint` pour un contrôle plus sophistiqué de l'impression 
-* `textwrap` pour l'impression de paragraphe de texte avec une largeur donnée
+* `textwrap` pour l'impression de paragraphes de texte avec une largeur donnée
 * `locale` pour imprimer des données avec les conventions de différents pays. 
+
+## Outils pour travailler avec les listes
+
+* module `array` permet d'avoir un type `array()` qui permet de stocker des données homogènes (un seul type) de façon plus compacte que les listes.
+* module `collections` permet d'avoir un type `deque()` pour réaliser des queues.
+* module `bisect` pour travailler avec les listes triées.
+
+
+
 
