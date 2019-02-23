@@ -1058,8 +1058,8 @@ for char in rev:
 * outil pour créer des itérateurs plus simplement.
 * s'écrit comme une fonction classique mais avec un *statement* `yield` lorsqu'on souhaite renvoyer la donnée.
 * à chaque fois que `next()` est appelé sur le générateur, il s'arrête dans l'état courant, en sauvegardant cet état.
-* tout ce qui peut être fait avec un générateur peut l'être avec une classe itérateur (paragraphe précédent). Ce qui rend le générateur plus compacte est que les méthode `__iter__()` et `next()` sont crées automatiquement.
-* de plus lorsque le générateur se termine, il lève automatiquement une exception `StopIteration`.
+* tout ce qui peut être fait avec un générateur peut l'être avec une classe itérateur (paragraphe précédent). Ce qui rend le générateur plus compact est que les méthodes `__iter__()` et `next()` sont créées automatiquement.
+* de plus, lorsque le générateur se termine, il lève automatiquement une exception `StopIteration`.
 
 L'exemple précédent pourrait être écrit avec un générateur comme :
 

@@ -1,5 +1,5 @@
 ---
-title: "Scrappy - Introduction"
+title: "Scrapy - Introduction"
 author: "Brendan LE LAIN"
 date: "20 janvier 2019"
 output: html_document
@@ -15,10 +15,91 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Sources
+# Ressources
 
 * <https://docs.scrapy.org/en/latest/>
 
+# Créer un projet Scrapy
+
+* se placer dans le dossier où l'on souhaite créer le projet et exécuter `scrapy startproject nom_projet`. Cela crée l'architecture suivante : 
+
+```{}
+nom_projet/
+    scrapy.cfg            # deploy configuration file
+
+    nom_projet/           # project's Python module, you'll import your code from here
+        __init__.py
+
+        items.py          # project items definition file
+
+        middlewares.py    # project middlewares file
+
+        pipelines.py      # project pipelines file
+
+        settings.py       # project settings file
+
+        spiders/          # a directory where you'll later put your spiders
+            __init__.py
+```
+
+# Une première *spider*
+
+* une spider est une classe que l'on doit définir et qui est utilisée par Scrapy pour récupérer des informations sur un site.
+* une spider doit dériver de la classe `scrapy.Spider`.
+* exemple d'une spider, code à enregistrer dans un `.py` sous `nom_projet/spiders` : 
+
+```{python}
+import scrapy
+
+
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+
+    def start_requests(self):
+        urls = [
+            'http://quotes.toscrape.com/page/1/',
+            'http://quotes.toscrape.com/page/2/',
+        ]
+        for url in urls:
+            yield scrapy.Request(url=url, callback=self.parse)
+
+    def parse(self, response):
+        page = response.url.split("/")[-2]
+        filename = 'quotes-%s.html' % page
+        with open(filename, 'wb') as f:
+            f.write(response.body)
+        self.log('Saved file %s' % filename)
+```
+
+* `name` : identifie la spider. Doit être unique dans le projet.
+* `start_requests()` : doit retourner un iterateur de requêtes par lesquelles la spider commencera.
+* à la place de `start_requests()`, il est possible d'utiliser la variable de classe `start_urls` avec une liste d'URLs. Cette liste sera utiliser par l'implémentation par défaut de `start_requests()` pour créer les requêtes initiales de la spider. La méthode `parse()` sera appelée pour gérer les requêtes pour ces URLs (par défaut, donc marche sans qu'on ait à l'expliciter).
+
+```{python}
+import scrapy
+
+
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+    start_urls = [
+        'http://quotes.toscrape.com/page/1/',
+        'http://quotes.toscrape.com/page/2/',
+    ]
+
+    def parse(self, response):
+        page = response.url.split("/")[-2]
+        filename = 'quotes-%s.html' % page
+        with open(filename, 'wb') as f:
+            f.write(response.body)
+```
+
+* `parse()` : une méthode qui sera appelée pour gérer la réponse téléchargée par chaque requête. Le paramètre `response` est une instance de `TextResponse` qui contient le contenu de la page. 
+
+
+
+# Exécuter une spider
+
+* se placer dans le dossier du projet et exécuter `scrapy crawl nom_spider`.
 
 
 
