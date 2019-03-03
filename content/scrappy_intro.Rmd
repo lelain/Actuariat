@@ -96,11 +96,164 @@ class QuotesSpider(scrapy.Spider):
 * `parse()` : une méthode qui sera appelée pour gérer la réponse téléchargée par chaque requête. Le paramètre `response` est une instance de `TextResponse` qui contient le contenu de la page. 
 
 
-
 # Exécuter une spider
 
 * se placer dans le dossier du projet et exécuter `scrapy crawl nom_spider`.
 
+# Extraire des données
+
+* Pour tester l'extraction de données, on peut utiliser le shell scrapy avec `scrapy shell 'webpage'`. Exemple `scrapy shell 'http://quotes.toscrape.com/page/1/'`.
+
+## `css()`
+
+* fonction `css()` pour sélectionner un élement. 
+* le résultat est un `SelectorList` qu'on peut continuer à explorer.
+* `::text` pour récupérer seulement le texte du sélecteur
+* `get()` pour récupérer le premier résultat
+* `getall()` pour les avoir tous.
+* `re()` pour pouvoir utiliser une expression régulière. Voir <https://docs.python.org/3/library/re.html>. Dans l'exemple : 
+    + `r'...'` pour *raw string* (ne prend pas en compte les `\`, utile surtout pour les expressions régulières)
+    + `\w` caractères pour les mots (pas les chiffres)
+    + `+` un ou plusieurs. Ici on veut donc les lettres jusqu'à ce qu'on trouve autre chose (donc un mot entier).
+    + `Q\w+` : mot commençant par `Q`.
+
+```{}
+>>> response.css('title')`
+[<Selector xpath='descendant-or-self::title' data='<title>Quotes to Scrape</title>'>]
+
+>>> response.css('title::text').getall()
+['Quotes to Scrape']
+
+>>> response.css('title::text').re(r'Q\w+')
+['Quotes']
+```
+
+## `XPath`
+
+* une expression `xpath` permet comme le css de naviguer dans les sélecteurs, mais permet aussi regarder dans le contenu, c'est plutôt plus puissant que les sélecteurs CSS.
+
+```{}
+>>> response.xpath('//title')
+[<Selector xpath='//title' data='<title>Quotes to Scrape</title>'>]
+
+>>> response.xpath('//title/text()').get()
+'Quotes to Scrape'
+```
+
+* voir <https://docs.scrapy.org/en/latest/topics/selectors.html#topics-selectors> et <http://zvon.org/comp/r/tut-XPath_1.html>
+
+## Exemple d'extraction
+
+* Pour extraire le texte, l'auteur et les tags on utiliserait la fonction `parse()` : 
+
+```{python}
+def parse(self, response):
+    for quote in response.css('div.quote'):
+        yield {
+            'text': quote.css('span.text::text').get(),
+            'author': quote.css('small.author::text').get(),
+            'tags': quote.css('div.tags a.tag::text').getall(),
+        }
+```
+
+# Suivre un lien
+
+* trouver le lien et utiliser l'attribut `href` : `response.css('li.next a::attr(href)').get()` ou `response.css('li.next a').attrib['href']`.
+
+* `urljoin()` pour créer un lien absolu vers une page.
+* pour extraire les infos sur toutes les pages du site, ça serait :
+
+```{python}
+def parse(self, response):
+    for quote in response.css('div.quote'):
+        yield {
+            'text': quote.css('span.text::text').get(),
+            'author': quote.css('small.author::text').get(),
+            'tags': quote.css('div.tags a.tag::text').getall(),
+        }
+
+    next_page = response.css('li.next a::attr(href)').get()
+    if next_page is not None:
+        next_page = response.urljoin(next_page)
+        yield scrapy.Request(next_page, callback = self.parse)
+```
+
+* Pour créer plus facilement un objet `Request`, on peut utiliser `response.follow()` : 
+
+```{python}
+for a in response.css('li.next a'):
+    yield response.follow(a, callback = self.parse)
+```
+
+* Autre exemple pour chercher les informations sur les auteurs : 
+
+```{python}
+import scrapy
+
+class AuthorSpider(scrapy.Spider):
+    name = 'author'
+    start_urls = ['http://quotes.toscrape.com/']
+
+    def parse(self, response):
+        # follow links to author pages
+        # le + pour élément qui suit directement : on va chercher le lien vers l'auteur
+        for href in response.css('.author + a::attr(href)'):
+            yield response.follow(href, self.parse_author)
+
+        # follow pagination links
+        for href in response.css('li.next a::attr(href)'):
+            yield response.follow(href, self.parse)
+
+    def parse_author(self, response):
+        # fonction utilitaire
+        # strip() pour enlever les espaces en trop je pense
+        def extract_with_css(query):
+            return response.css(query).get(default = '').strip()
+
+        yield {
+            'name': extract_with_css('h3.author-title::text'),
+            'birthdate': extract_with_css('.author-born-date::text'),
+            'bio': extract_with_css('.author-description::text'),
+        }
+```
+
+
+# Utiliser des arguments pour la spider
+
+* on peut passer des arguments en ligne de commande avec l'option `-a` : `scrapy crawl quotes -o quotes-humor.json -a tag=humor`.
+* l'argument est passé à la methode `__init__()` de la spider et devient un attribut par défaut.
+* dans l'exemple, si on passe l'argument `tag=humor`, la spider ne visitera que les pages à partir du tag `humor`.
+
+```{python}
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+
+    def start_requests(self):
+        url = 'http://quotes.toscrape.com/'
+        tag = getattr(self, 'tag', None)
+        if tag is not None:
+            url = url + 'tag/' + tag
+        yield scrapy.Request(url, self.parse)
+
+    def parse(self, response):
+        for quote in response.css('div.quote'):
+            yield {
+                'text': quote.css('span.text::text').get(),
+                'author': quote.css('small.author::text').get(),
+            }
+
+        next_page = response.css('li.next a::attr(href)').get()
+        if next_page is not None:
+            yield response.follow(next_page, self.parse)
+```
+
+
+# Enregistrer les données scrapées
+
+* Avec `scrapy crawl nom_spider -o nom_fichier.json`.
+* Attention : ça enregistre à la suite du fichier. Donc si on le fait 2 fois de suite, on aura des problèmes...
 
 
 

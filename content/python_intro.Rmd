@@ -289,7 +289,8 @@ print(map(add, seq, seq))
 * `reduce(function, sequence)` renvoie une seule valeur construite en appelant la fonction binaire (2 arguments) `function` sur les 2 premiers éléments de la séquence, puis sur le résultat et l'élément suivant, etc.
 
 ```{python}
-def add(x, y): return x + y
+def add(x, y): 
+    return x + y
 
 print(reduce(add, range(1, 4))
 ```
